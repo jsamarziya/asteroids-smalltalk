@@ -1,0 +1,144 @@
+<HTML>
+<HEAD>
+<TITLE>
+Asteroids in Smalltalk
+</TITLE>
+</HEAD>
+
+<BODY BACKGROUND="starry.gif" bgproperties=FIXED text=white vlink="#EEE8FF" link="#DDCCFF">
+<H1>Asteroids in Smalltalk</H1>
+<spacer type=vertical size=50>
+
+<p align=justify><spacer type=horizontal size=20>
+
+In 1986 I wrote a program called <i>UFO Hangman</i>. The code was
+written in Applesoft and ran on an Apple II at my high school; it had
+a 12" green monochrome monitor. The game used text-based graphics, 40
+columns by 24 rows, and was feeped with every creature I could think
+of.  Among its bells, whistles, and gongs: It used a form of
+double-buffering (the Apple II had two text screens that you could
+switch between) to provide a quick "beam-up" effect: when you guessed
+a letter that was in the word, the alien ship would beam up the letter
+and place it in its correct place. The words that the aliens threw at
+you were listed in files that could be changed or added to. And it
+called machine-language routines (snarfed from some Beagle Brothers
+code) to produce a few sounds (buzzing, mostly).
+
+<p align=justify><spacer type=horizontal size=20>
+
+More than ten years after <i>UFO Hangman</i>, my first (and last)
+game, I've implemented another: <i>Asteroids</i>, written in
+Smalltalk.  It runs in the <a
+href="http://www.objectshare.com">ParcPlace</a> <a
+href="http://www.parcplace.com/products/vworks/info/vw25.htm">VisualWorks</a>
+environment, and on the P6-200 I developed it on, the game runs fairly
+well.  It remains faithful to the original <i>Asteroids</i>
+look-and-feel, as far as I can remember it.  Here's the <a
+href="asteroids.st">source code</a> if you want to run it, and the <a
+href="asteroids.html">formatted, human-readable source code</a> if you
+want to read it.
+
+<p align=justify><spacer type=horizontal size=20>
+
+My thoughts on Smalltalk after implementing <i>Asteroids</i>:
+
+<p align=justify><spacer type=horizontal size=20>
+
+In the past, I never tried to write a graphics-based game because I
+didn't have easy-to-use graphics routines that I needed to draw to the
+screen.  Implementing <i>Asteroids</i> was easy because of the large
+set of graphics support classes that was available.  They allowed me
+to schedule windows, draw graphical objects and stylized text, and use
+double-buffering for flicker-free animation.  
+
+<p align=justify><spacer type=horizontal size=20>
+
+Besides the classes for graphics support, there were other premade
+classes in the VisualWorks environment that made development easier.
+When I needed to do keyboard handling, read and write files to disk,
+store data in structures, or create multiple threads of execution, I
+was able to find classes that allowed me to do it.  
+
+<p align=justify><spacer type=horizontal size=20>
+
+The downside of using the pre-existing classes was that it was
+sometimes difficult to figure out how to use them.  There was not as
+much documentation as I would have liked, although I was able to learn
+much from examples.  The Blue Book was helpful in showing how control
+structures work and in explaining how to fork processes, but it
+couldn't help at all with platform-specific issues.  I never did
+figure out how to manipulate text fonts, styles, and sizes, and in
+general my string handling was not done very well.
+
+<p align=justify><spacer type=horizontal size=20>
+
+I found that using Smalltalk's inheritance-based classes worked well
+to model the objects in the game.  I built a basic Sprite class which
+defines an object that has a shape, velocity, acceleration, a location
+in two-dimensional space, a rotational speed, and a color.  The
+asteroids, the player's ship, the alien spaceships, and the explosion
+particles were all modeled as subclasses of Sprite.  Much of the
+behavior of those objects is the same for each, and so by putting the
+code for those common behaviors in the Sprite class I avoided
+replicating that code for each object.
+
+<p align=justify><spacer type=horizontal size=20>
+
+I was surprised to find how difficult it could be to debug Smalltalk
+code. The most common errors occured after changing the definition of
+instance variables of a class.  Often I would decide to remove or
+rename an instance variable, which would then cause to break those
+instance methods that referenced the variable.  I soon learned to find
+and correct all methods that referenced a variable before making such
+changes.  
+
+<p align=justify><spacer type=horizontal size=20>
+
+In the beginning stages of design, it was difficult to keep track of
+what types I intended for all the different variables.  The lack of
+type declarations made things confusing early on, and adding comments
+didn't help -- when my intentions changed, the comments usually didn't
+keep up. As the design became more concrete and familiar, there was
+not such a problem.
+
+<p align=justify><spacer type=horizontal size=20>
+
+The lack of compile-time type checking seemed to make program
+validation more difficult than usual.  I found it sometimes difficult,
+after making changes to the code, to test whether the changes had
+introduced bugs into the program. "Message not understood" errors
+would occur at odd times, and it was difficult to tell whether one was
+still out there, waiting to occur.  Testing a program is hardly ever
+easy, but the absence of up-front type checking added to the list of
+potential bugs that had to be sought out.
+
+<p align=justify><spacer type=horizontal size=20>
+
+It was very useful to be able to tune while the program was running
+the parameters that determine the physical behavior of game objects.
+Changes could be made to timing and scaling values while the program
+was active, and because Smalltalk is interpreted the effects of those
+changes would be seen immediately.  Getting the ships and asteroids to
+move and collide and rotate <i>just right</i> was pretty easy to do.
+
+<p align=justify><spacer type=horizontal size=20>
+
+The downside of this flexibility, of course, is poor execution speed.
+On the Pentium Pro 200 MHz machine on which it was developed,
+<i>Asteroids</i> can maintain a frame rate varying between 8 and 13
+frames per second.  The high end of this range provides acceptable
+playability but at the lower frame rates the performance deterioration
+is obvious, and everything comes to a momentary halt whenever the
+garbage collector runs.  
+
+<p align=justify><spacer type=horizontal size=20>
+
+I have optimized the code where I could, by replacing expensive
+collection data structures with linked lists, for example, and by
+reusing shape objects.  There may be other was to make the game run
+more efficiently, but I have so far been unable to find them.
+
+</ul>
+
+</BODY>
+</HTML>
